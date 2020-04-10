@@ -1,2 +1,67 @@
 ---
-# tasks file for wekan
+- name: Create group
+  group:
+    name: "{{ wekan_group }}"
+    state: present
+
+- name: Create user
+  user:
+    name: "{{ wekan_user }}"
+    group: "{{ wekan_group }}"
+    create_home: yes
+    home: "{{ wekan_base_path }}"
+    shell: "/bin/bash"
+
+- name: Check if file with current installed version exists
+  stat:
+    path: "{{ wekan_base_path }}/VERSION"
+  register: stat_version_file
+
+
+- name: Get content of file with current installed version
+  slurp:
+    src: "{{ wekan_base_path }}/VERSION"
+  register: slurp_version_file
+  when: stat_version_file.stat.exists
+
+- name: Extract source package
+  unarchive:
+    src: "{{ wekan_source }}"
+    dest: "{{ wekan_base_path }}"
+    owner: "{{ wekan_user }}"
+    group: "{{ wekan_group }}"
+    remote_src: yes
+  when: (not stat_version_file.stat.exists) or (slurp_version_file.content | b64decode != wekan_version)
+
+- name: Create file for saving current installed version
+  copy:
+    content: "{{ wekan_version }}"
+    dest: "{{ wekan_base_path }}/VERSION"
+  when: (not stat_version_file.stat.exists) or (slurp_version_file.content | b64decode != wekan_version)
+
+- name: Install npm packages requirements
+  npm:
+    path: "{{ wekan_base_path }}/bundle/programs/server"
+    state: present
+  become: yes
+  become_user: "{{ wekan_user }}"
+
+- name: Upload .env
+  template:
+    src: ".env.j2"
+    dest: "{{ wekan_base_path }}/bundle/.env"
+    owner: "{{ wekan_user }}"
+    group: "{{ wekan_group }}"
+  notify: Restart systemd service
+
+- name: Upload systemd service file
+  template:
+    src: "systemd-service.service.j2"
+    dest: "/etc/systemd/system/{{ wekan_systemd_service_name }}.service"
+
+- name: Enable/Start systemd service
+  systemd:
+    name: "{{ wekan_systemd_service_name }}.service"
+    daemon_reload: yes
+    enabled: yes
+    state: started

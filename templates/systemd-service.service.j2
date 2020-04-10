@@ -1,0 +1,17 @@
+[Unit]
+Description=Wekan Server
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart={{ wekan_nodejs_path }} main.js
+EnvironmentFile={{ wekan_base_path }}/bundle/.env
+User={{ wekan_user }}
+Group={{ wekan_group }}
+WorkingDirectory={{ wekan_base_path }}/bundle
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

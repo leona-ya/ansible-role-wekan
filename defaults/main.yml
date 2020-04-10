@@ -1,2 +1,7 @@
 ---
-# defaults file for wekan
+wekan_user: "wekan"
+wekan_group: "{{ wekan_user }}"
+wekan_source: "https://releases.wekan.team/wekan-{{ wekan_version }}.zip"
+wekan_nodejs_path: "/usr/bin/env node"
+wekan_base_path: "/opt/wekan"
+wekan_systemd_service_name: "wekan"

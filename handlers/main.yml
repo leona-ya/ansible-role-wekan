@@ -1,2 +1,5 @@
 ---
-# handlers file for wekan
+- name: Restart systemd service
+  systemd:
+    name: "{{ wekan_systemd_service_name }}.service"
+    state: restarted
