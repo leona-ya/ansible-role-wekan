@@ -8,8 +8,6 @@ Ansible role for a wekan installation without docker
 * (optional) An e-mail server
 
 ## Role Variables
-- wekan_base_path
-- wekan_port
 
 | Variable Name | Function | Default value | Comment |
 | ------------- | -------- | ------------- | ------- |
