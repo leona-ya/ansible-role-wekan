@@ -51,7 +51,7 @@ Including an example of how to use your role (for instance, with variables passe
 ```yaml
 - hosts: servers
   roles:
-     - { role: em0lar.wekan, wekan_version: "3.93", wekan_mongodb_url: "mongodb://wekan:password@localhost:27017/wekan", wekan_root_url: "https://kanban.example.org" , wekan_port: 8080 }
+     - { role: em0lar.wekan, wekan_version: "3.93", wekan_mongodb_url: "mongodb://wekan:password@localhost:27017/wekan", wekan_root_url: "https://kanban.example.org" , wekan_port: 8080, nodejs_version: "12.x" }
 ```
 ## License
 
